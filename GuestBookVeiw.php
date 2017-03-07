@@ -12,25 +12,29 @@
 	<script src="bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
-
+<h2><?php if(isset($_SESSION['notice'])){
+                echo $_SESSION['notice'];
+            } ?></h2>
 	<form role="form" action="/guestbook" method="POST" id="guestForm">
 		<div class="form-group">
-			<input type="text" name="nameGroup" placeholder="Ваше имя" >
+<input class="form-control" type="text" name="nameGroup" placeholder="Ваше имя" value=<?php echo '"'.$_COOKIE['name'].'"';?>>
 		</div>
 		<div class="form-group">
-			<input type="email" name="emailGroup" placeholder="Ваш имейл">
+			<input class="form-control" type="email" name="emailGroup" placeholder="Ваш имейл" value=<?php echo '"'.$_COOKIE['email'].'"';?>>
 		</div>
 		<div class="form-group">
-			<textarea name="" name="textGroup" cols="30" rows="10" placeholder="Текст сообщения"></textarea>
+			<textarea  class="form-control" name="textGroup" cols="30" rows="10" placeholder="Текст сообщения"></textarea>
 		</div>
 		<button type="submit" id="btnSend">Отправить</button>
 	</form>	
-	<table   border="1" cellspacing="0" cellpadding="15" width="90%" class="tab">
+	<table id="messages"  border="1" cellspacing="0" cellpadding="15" width="90%" class="tab">
 
-		<tr>
+		<tr id="start">
 			<td >Имя</td>
 			<td >Email</td>
 			<td >Сообщение</td>
+			<td >Время</td>
+			<td >file link</td>
 		</tr>
 
 		<?php 
@@ -40,8 +44,11 @@
 			<td class="center1"><?=$message['nameGroup']?></td>
 			<td class="center1"><?=$message['emailGroup']?></td>
 			<td class="center1"><?=$message['textGroup']?></td>
+			<td class="center1"><?=$message['time']?></td>
+			<td class="center1"><?=$message['filename']?></td>
 		</tr>
 		<?php  } ?>
+		
 	</table>
 
 
@@ -54,24 +61,30 @@ $(document).ready( function(e) {
 			method: "POST",
 			url: "/guestbook",
 			data: { 
-				name: $('#nameGroup').val(), 
-				email: $('#emailGroup').val(),
-				message:  $('#textGroup').val()
+				nameGroup: $('[name ="nameGroup"]').val(), 
+				emailGroup: $('[name ="emailGroup"]').val(),
+				textGroup:  $('[name = "textGroup"]').val()
+			},
+			success: function(data){
+				console.dir('done');
 			}
-			success: function(){}
-		}).done( function( data ) {
+			
+			}).done( function( data ) {
 
-			var res = JSON.parse( data );
+			    var res = JSON.parse( data );
+			     console.log(res);
+			    
 
-			if( res.result > 0 ) {
-				el = document.createElement('div');
-				$(el).html( $('#nameGroup').val() + '<br/>' + 
-					$('#emailGroup').val() + '<br/>' + 
-					$('#textGroup').val() + '<br/><br/><hr/>' );
-				console.log(el);
-				$('#textGroup').prepend(el);
-			}    
-		});
+ 			     var el = document.createElement('tr');
+			     $(el).html( 
+			     	'<td>'+res.message.nameGroup+'<td>' + '<br/>' + 
+			        '<td>'+res.message.emailGroup+'<td>' + '<br/>' + 
+			        '<td>'+res.message.textGroup+'<td>' + '<br/>' + 
+			        '<td>'+res.message.time+'<td>' + '<br/><br/><hr/>' );
+			     console.log(el);
+			     $('#messages').prepend(el);
+			   
+		});        
 	});
 });
 </script>

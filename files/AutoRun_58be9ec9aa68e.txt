@@ -1,0 +1,5 @@
+Main
+readConfig ok
+InitInstance
+file not installed, open download url
+HTC Sync Manager autorun,finished

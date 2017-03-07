@@ -1,56 +1,67 @@
 <?php
-//var_dump($_POST);
-//exit();
 
-define( 'DB_PATH', 'db.txt' );
-//var_dump($newMessage);
-$newMessage = $_POST;
-//date_default_timezone_get("Europe/Kiev");
-//var_dump($unixTime['time']);
- //$unixTime['time']=time();
- //array_unshift( $allMessages, $unixTim);
+function addFile($fileList) {
+	if (!empty($fileList)) {
+		if ($fileList['userfile']['size']!=0) {
+				$path = "".dirname(__FILE__).'\files\\';
+				$fileName = pathinfo($fileList['userfile']['name'], PATHINFO_FILENAME)."_".uniqid().".".pathinfo($fileList['userfile']['name'], PATHINFO_EXTENSION);
+				$fullPath = $path.$fileName;
+				move_uploaded_file($fileList['userfile']['tmp_name'], $fullPath);
+				
+				
+				
+				return $fileName;
+				
+			} else {
+				return "without file";
+			}
+		} else {
+			return "file empty";
+		}
 
- // echo json_encode(['result' => 0]);
- // exit();
- //var_dump($newMessage['nameGroup']);
-
-if( $newMessage['nameGroup'] != '' && $newMessage['emailGroup'] != '' && $newMessage['textGroup'] != '' ) {
- //var_dump(file_get_contents( DB_PATH ));
-	if( file_exists( DB_PATH) && file_get_contents( DB_PATH ) != NULL ) { 
-
-		$allMessages = json_decode ( file_get_contents( DB_PATH ), true );
-  //var_dump($newMessage);
-//date_default_timezone_get("Europe/Kiev");
-//var_dump($unixTime['time']);
- //$unixTime['time']=time();
-		var_dump($allMessages);
-		//var_dump($newMessage);
-
-		$allMessages = array_unshift($allMessages, $newMessage);
-
- //var_dump($allMessages);
-	}
-	else {
-		$allMessages = [$newMessage];
-		
-	}
-	$res = file_put_contents( DB_PATH, json_encode( $allMessages ) );
-	
 }
 
-if(
-	isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
+$newMessage = $_POST;
+
+function validation($data, $file, $fileList) {
+	if ( file_exists($file) && file_get_contents($file) != NUll ) {
+	 	$allMessages = json_decode ( file_get_contents($file), true  );
+		$data['time']=date("H:i d-m-Y ",time());
+		$data['filename'] = addFile($fileList);
+		array_unshift($allMessages, $data);
+		file_put_contents($file, json_encode( $allMessages));
+		setcookie("name", $data['nameGroup'], time()+3000);
+		setcookie("email", $data['emailGroup'], time()+3000);
+		$_SESSION['notice'] = 'Message Saved !!!';
+		include "GuestBookVeiw.php";
+	} else {
+ 		echo "БД не найдена";
+	}
+}
+
+if (
+	isset($_SERVER['HTTP_X_REQUESTED_WITH']) //флажки - проверка на аджакс 
 	&& !empty($_SERVER['HTTP_X_REQUESTED_WITH']) 
 	&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
-	) {
- // Если к нам идёт Ajax запрос, то ловим его
-	echo json_encode( [ 'result' => (int)$res ] );
-exit;
+) {
+// Если к нам идёт Ajax запрос, то ловим его
+//echo json_encode( [ 'result' => (int)$res ] );
+
+	echo json_encode( [ 'message' => $newMessage ] );
+		exit;
+} else {
+
+	define( "DB_PATH", "db.txt" );
+  
+	if ($newMessage['nameGroup'] != '' && 
+		$newMessage['emailGroup'] != '' && 
+		$newMessage['textGroup'] != '') {
+		validation($newMessage, DB_PATH, $_FILES);
+	} else {
+		echo "Пусто";
+	}
 }
 
-include "GuestBookVeiw.php";
 
 
 
-
- 

@@ -1,11 +1,14 @@
 
 <?php
+session_start();
+date_default_timezone_set("Europe/Kiev");
 //var_dump($_SERVER['REQUEST_URI']);
 if (false !== strpos($_SERVER['REQUEST_URI'], 'guestbook')){
 	include "GuestBook.php";
 	}else if ($_SERVER['REQUEST_URI']=='/'){
 	include "index_View.php";
 	}
+
 
 /*function makecoffee($types = array("капуччино"), $coffeeMaker = NULL)
 {

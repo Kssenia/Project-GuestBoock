@@ -75,17 +75,20 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-md-6  .col-md-offset-6 nameGroup">
-							<form action="/guestbook" role="form" method="POST" id="guestForm">
+							<form action="/guestbook" role="form" method="POST" name="guestForm" enctype="multipart/form-data">
 									<div class="form-group">
-										<input type="text" name="nameGroup" class="name"" placeholder="Ваше имя" >
+										<input class="form-control" type="text" name="nameGroup" class="name"" placeholder="Ваше имя" >
 									</div>
 									<div class="form-group">
-										<input type="email" name="emailGroup" class="email" placeholder="Ваш имейл">
+										<input class="form-control" type="email" name="emailGroup" class="email" placeholder="Ваш имейл">
 									</div>
 									<div class="form-group">
-										<textarea name="textGroup" class="text" cols="30" rows="10" placeholder="Текст сообщения"></textarea>
+										<textarea  class="form-control" name="textGroup" class="text" cols="30" rows="10" placeholder="Текст сообщения"></textarea>
 									</div>
-									<button type="submit" id="btnSend">Отправить</button>
+									
+										<input type="hidden" name="MAX_FILE_SIZE" value="5000000">
+										<input name="userfile" type="file">
+										<input type="submit" id="btnSend" value="Отправить">
 								</form>	
 						</div>
 						<div class="col-md-6">
@@ -126,5 +129,5 @@
 						</div>	
 					</div>	
 				</div>
-	</body>
+			</body>
 	</html>
